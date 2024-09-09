@@ -27,6 +27,8 @@ async function sendVerificationEmail(email,otp){
 }
 
 //pre middleware
+//otp.create method s phle this function will be called. 
+//otp ko database m save krne s phle mail will be sent.
 otpSchema.pre("save",async function(next){
 await sendVerificationEmail(this.email,this.otp);
 next();

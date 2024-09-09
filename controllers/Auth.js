@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const OTP = require("../models/OTP");
 const otpGenerator = require("otp-generator");
+require('dotenv').config();
 //sendOtp
 exports.sendOTP = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ exports.sendOTP = async (req, res) => {
     //in companies we interact with services which offer unique otp only its a brute force approach which we used.
     //to enter the otp in the database
     const otpPayload = { email, otp };
-
+    //inserting otp into the database
     const otpBody = await OTP.create(otpPayload);
     console.log(otpBody);
 
@@ -159,22 +160,77 @@ exports.signup = async (req, res) => {
 };
 //login
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  //if user hasn't put any data for the email or password on the login screen
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please provide both email and password",
-    });
+  try{
+
+    const { email, password } = req.body;
+    //if user hasn't put any data for the email or password on the login screen
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide both email and password",
+      });
+    }
+    //check if user exists or not
+    //use findOne method to check the email in the DB
+    const user = await User.findOne({ email }).populate("additionalDetails");
+    if (!user) { //login ho rha h bro
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if(await bcrypt.compare(password, user.password)){
+      //if password is matched which is there and which user has given
+      //if password is correct then generate JWT token.
+      const payload={
+        email: user.email,
+        id: user._id,
+        accountType: user.accountType,
+      }
+      const token= jwt.sign(payload,process.env.JWT_SECRET,{
+        expiresIn:"2h",
+      }) 
+      //inserted token inside user
+      user.token=token;
+      user.password= undefined;
+      //create cookie and send response
+      const options={
+        expires: new Date(Date.now()+ 3*24*60*60*1000),
+        httpOnly: true,
+        secure: true, //if we are running server on https then true otherwise false.
+      }
+      res.cookie("token",token,options).status(200).json({
+        success: true,
+        token,
+        message: "Login successful",
+        user,
+      })
+
+    }else{
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password",
+      });
+    }
   }
-  //use findOne method to check the email in the DB
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(401).json({
+  catch(error){
+    console.log(error);
+    
+    return res.status(500).json({
       success: false,
-      message: "User not found",
-    });
+      message: "Login error",
+    })
   }
+ 
 };
 //Change password.
-sab changa si
+exports.changePassword = async(req,res)=>{
+  //get data from req body
+  //we are changing password
+  //3 types of data would be there old,new and confirm new password
+  //validation they are not empty, matching should be there
+  //update in database.
+  //mail send krdo password is updated.
+  //return response.
+}
