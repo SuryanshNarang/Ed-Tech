@@ -137,7 +137,7 @@ exports.signup = async (req, res) => {
       about: null,
       contactNo: null,
     }); //whatever id we will recieve from here we will store that below:
-    const user = await User.create({
+    const user = await User.create({ //storing details with hashedPassword
       firstname,
       lastname,
       email,
@@ -181,7 +181,7 @@ exports.login = async (req, res) => {
     }
 
     if(await bcrypt.compare(password, user.password)){
-      //if password is matched which is there and which user has given
+      //if password is matched which is there in DB and which user has given
       //if password is correct then generate JWT token.
       const payload={
         email: user.email,

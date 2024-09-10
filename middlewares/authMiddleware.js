@@ -1,8 +1,9 @@
-//MIDDLEWARE hai so will act in between
+//MIDDLEWARE hai so will act in between to check if the request came is valid or not
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const User = require("../models/User");
 //will check authentication in this.
+//on the basis of jwt authentication is done
 exports.auth = async (req, res) => {
   try {
     //extract kro token sbse phle
@@ -36,7 +37,7 @@ exports.auth = async (req, res) => {
     });
   }
 };
-//isStudent
+//isStudent auth done on basis of role.
 exports.isStudent = async (req, res, next) => {
   //at the time of login controller we created a payload which contained user role
   try {
