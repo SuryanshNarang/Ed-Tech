@@ -57,4 +57,42 @@ exports.isStudent = async (req, res, next) => {
   }
 };
 //isInstructor
+exports.isInstructor = async (req, res, next) => {
+  try {
+    //1) req m se we can find out first method
+    //2) second can be taking from DB accountType
+    //but we will go with first method as we already have the data
+    if (req.user.accountType !== "Instructor") {
+      return res.status(401).json({
+        success: false,
+        message: "User is not a student",
+      });
+    }
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Something wen wrong while validating user role",
+    });
+  }
+  next();
+};
 //isAdmin
+exports.isAdmin = async (req, res) => {
+  try {
+    //1) req m se we can find out first method
+    //2) second can be taking from DB accountType
+    //but we will go with first method as we already have the data
+    if (req.user.accountType !== "Admin") {
+      return res.status(401).json({
+        success: false,
+        message: "User is not a student",
+      });
+    }
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Something wen wrong while validating user role",
+    });
+  }
+  next();
+};

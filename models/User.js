@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema({
       ref: "Course",
     },
   ],
+  token: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },s
   courseProgress: [
     //in array because there will be multiple coursesprogresses.
     {
