@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const OTP = require("../models/OTP");
 const otpGenerator = require("otp-generator");
-require('dotenv').config();
+require("dotenv").config();
 //sendOtp
 exports.sendOTP = async (req, res) => {
   try {
@@ -137,7 +137,8 @@ exports.signup = async (req, res) => {
       about: null,
       contactNo: null,
     }); //whatever id we will recieve from here we will store that below:
-    const user = await User.create({ //storing details with hashedPassword
+    const user = await User.create({
+      //storing details with hashedPassword
       firstname,
       lastname,
       email,
@@ -160,8 +161,7 @@ exports.signup = async (req, res) => {
 };
 //login
 exports.login = async (req, res) => {
-  try{
-
+  try {
     const { email, password } = req.body;
     //if user hasn't put any data for the email or password on the login screen
     if (!email || !password) {
@@ -173,64 +173,64 @@ exports.login = async (req, res) => {
     //check if user exists or not
     //use findOne method to check the email in the DB
     const user = await User.findOne({ email }).populate("additionalDetails");
-    if (!user) { //login ho rha h bro
+    if (!user) {
+      //login ho rha h bro
       return res.status(401).json({
         success: false,
         message: "User not found",
       });
     }
 
-    if(await bcrypt.compare(password, user.password)){
+    if (await bcrypt.compare(password, user.password)) {
       //if password is matched which is there in DB and which user has given
       //if password is correct then generate JWT token.
-      const payload={
+      const payload = {
         email: user.email,
         id: user._id,
         role: user.accountType,
-      }
-      const token= jwt.sign(payload,process.env.JWT_SECRET,{
-        expiresIn:"2h",
-      }) 
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "2h",
+      });
       //inserted token inside user
-      user.token=token;
-      user.password= undefined;
+      user.token = token;
+      user.password = undefined;
       //create cookie and send response
-      const options={
-        expires: new Date(Date.now()+ 3*24*60*60*1000),
+      const options = {
+        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         httpOnly: true,
         secure: true, //if we are running server on https then true otherwise false.
-      }
-      res.cookie("token",token,options).status(200).json({
+      };
+      res.cookie("token", token, options).status(200).json({
         success: true,
         token,
         message: "Login successful",
         user,
-      })
-
-    }else{
+      });
+    } else {
       return res.status(401).json({
         success: false,
         message: "Incorrect password",
       });
     }
-  }
-  catch(error){
+  } catch (error) {
     console.log(error);
-    
+
     return res.status(500).json({
       success: false,
       message: "Login error",
-    })
+    });
   }
- 
 };
 //Change password.
-exports.changePassword = async(req,res)=>{
+exports.changePassword = async (req, res) => {
   //get data from req body
   //we are changing password
+
   //3 types of data would be there old,new and confirm new password
+  const { oldpassword, newpassword, confirmnewpassword } = req.body;
   //validation they are not empty, matching should be there
   //update in database.
   //mail send krdo password is updated.
   //return response.
-}
+};
