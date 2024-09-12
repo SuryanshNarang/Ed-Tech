@@ -57,6 +57,18 @@ exports.createCourse = async (req, res) => {
       tag: tagDetails._id,
       thumbnail: thumbnailImage.secure_url,
     });
+    //add the new course to the user schema of Instructor (instructor ki list m course ko add krna hai )
+    await User.findByIdAndUpdate(
+      { _id: instructorDetails._id }, // Query to find the user by ID
+      {
+        $push: {
+          courses: newCourse._id, // Pushing the new course ID into the courses array
+        },
+      },
+      { new: true } // This option returns the updated document
+    );
+    //got the instructor id
+    //user ke record ke andar course ke array ke andar we have to add the ID of it.
   } catch (error) {}
 };
 
