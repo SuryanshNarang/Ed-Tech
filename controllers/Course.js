@@ -23,11 +23,11 @@ exports.createCourse = async (req, res) => {
     }
     //check for instructor? already done in middleware then why are we checking it again
     //ans: because only instructor will make the course. (we have to make a DB call for it )
-    //check in Course model there is instructor object ID so to get that ID we wo;; dp a DB call
+    //check in Course model there is instructor object ID so to get that ID we do a DB call
     const userID = req.user.id; //we have to first get the userID
     const instructorDetails = await User.findById(userID);
     console.log("Instructor Details", instructorDetails);
-
+    //TODO: verify that user ID or instructorDetails._id  are same or different?
     if (!instructorDetails) {
       return res.status(404).json({
         success: false,
@@ -68,8 +68,35 @@ exports.createCourse = async (req, res) => {
       { new: true } // This option returns the updated document
     );
     //got the instructor id
-    //user ke record ke andar course ke array ke andar we have to add the ID of it.
-  } catch (error) {}
+    //user ke record ke andar course ke array ke andar we added the ID of it.
+    return res.status(200).json({
+      success: true,
+      message: "Course created successfully",
+      course: newCourse,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Error while creating course",
+    });
+  }
 };
 
 //get all course handler function
+exports.showAllCourses = async (req, res) => {
+  try {
+    //TODO: Change the below statement incrementally
+    const allCoures = await Course.find({});
+    return res.status(200).json({
+      success: true,
+      message: "Courses fetched successfully",
+      data: allCoures,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching courses",
+    });
+  }
+};
