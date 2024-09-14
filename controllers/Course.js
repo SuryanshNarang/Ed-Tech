@@ -27,6 +27,7 @@ exports.createCourse = async (req, res) => {
     const userID = req.user.id; //we have to first get the userID
     const instructorDetails = await User.findById(userID);
     console.log("Instructor Details", instructorDetails);
+
     //TODO: verify that user ID or instructorDetails._id  are same or different?
     if (!instructorDetails) {
       return res.status(404).json({
@@ -84,6 +85,7 @@ exports.createCourse = async (req, res) => {
 
 //get all course handler function
 exports.showAllCourses = async (req, res) => {
+  //Complete the TODO
   try {
     //TODO: Change the below statement incrementally
     const allCoures = await Course.find({});

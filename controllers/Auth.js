@@ -230,6 +230,12 @@ exports.changePassword = async (req, res) => {
   //3 types of data would be there old,new and confirm new password
   const { oldpassword, newpassword, confirmnewpassword } = req.body;
   //validation they are not empty, matching should be there
+  if (!oldpassword || !newpassword || confirmnewpassword) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
   //update in database.
   //mail send krdo password is updated.
   //return response.
