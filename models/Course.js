@@ -21,7 +21,7 @@ const courseSchema = new mongoose.Schema({
   },
   courseContent: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId, //section ki objectID store hgi
       ref: "Section",
     },
   ],
@@ -49,4 +49,5 @@ const courseSchema = new mongoose.Schema({
     },
   ],
 });
+//mode changed tag type will be string and the category section will have an objectID as there is a category section added to when creating a course.
 module.exports = mongoose.model("Course", courseSchema);

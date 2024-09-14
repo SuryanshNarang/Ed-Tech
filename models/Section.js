@@ -7,7 +7,7 @@ const sectionSchema = new mongoose.Schema({
   },
   subSection: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId, //subsection idhar add krna hai
       required: true,
       ref: "SubSection",
     },
