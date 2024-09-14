@@ -236,6 +236,13 @@ exports.changePassword = async (req, res) => {
       message: "All fields are required",
     });
   }
+  //check if new password matches confirm new Password
+  if (newpassword !== confirmnewpassword) {
+    return res.status(400).json({
+      success: false,
+      message: "New password and confirm new password must match",
+    });
+  }
   //update in database.
   //mail send krdo password is updated.
   //return response.
