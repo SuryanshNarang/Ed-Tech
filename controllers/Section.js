@@ -1,5 +1,6 @@
 export Section=require("../models/Section");
 const Course= require("../models/Course");
+//COurseID is created so we have the ID so we can access the Course so when button is clicked (addSection) so request m courseID can be sent easily.
 exports.createSection=async(req,res)=>{
     try{
         //data fetch
@@ -15,7 +16,7 @@ exports.createSection=async(req,res)=>{
         //create section
         const newSection = await Section.create({sectionName});
 
-        //update Course Schema with ObjectId of this section 
+        //update Course.Model with the sectionID or we can say objectID . 
         const updatedCourseDetails= await Course.findByIdAndUpdate(courseId,{$push:{courseContent:newSection._id}},{new:true});
         //TODO how to use populate function here so that i can use section and subsection populated together.
 
@@ -33,4 +34,18 @@ exports.createSection=async(req,res)=>{
             error,
         })
     }
+}
+exports.updateSection= async(req,res)=>{
+try{
+    
+ }catch(error){
+
+    }
+}
+exports.deleteSection= async(req,res)=>{
+try{
+
+}catch(error){
+
+}
 }

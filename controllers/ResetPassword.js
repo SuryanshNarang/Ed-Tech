@@ -57,7 +57,7 @@ exports.resetPasswordToken = async (req, res) => {
 
 
 //reset password function
-export.resetPassword = async(req,res)=>{
+exports.resetPassword = async(req,res)=>{
     try{
 //3 things will be there token, password, confirm password
 //after clicking on the link we are redirected to  the UI where new password is entered
