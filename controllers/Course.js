@@ -52,7 +52,7 @@ exports.createCourse = async (req, res) => {
     const newCourse = await Course.create({
       courseName,
       courseDescription,
-      instructor: instructorDetails._id, //new course create krte time we fetched instructor details and ID and we need OBJECTID to create the entry in DB
+       //new course create krte time we fetched instructor details and ID and we need OBJECTID to create the entry in DB
       whatYouWillLearn,
       price,
       tag: tagDetails._id,
