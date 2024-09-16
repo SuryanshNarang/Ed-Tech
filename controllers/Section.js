@@ -68,3 +68,27 @@ try{
     })
     }
 }
+exports.deleteSection= async(req,res)=>{
+    try{
+        //sending the id in parameters this time.
+        const{sectionId}=req.params;
+        if(!sectionId){
+            return res.status(400).json({
+                success: false,
+                message: "Missing Properties.",
+            })
+        }
+        await Section.findByIdAndDelete(sectionId);
+        return res.status(200).json({
+            success: true,
+            message: "Section deleted successfully",
+            deletedSection: section,
+        })
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: "Error while deleting section",
+            error,
+        })
+    }
+    }
