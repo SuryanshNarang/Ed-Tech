@@ -33,7 +33,7 @@ exports.createSubSection = async (req, res) => {
         }},{
             new:true, //this will return the updated document
         }
-    ).populate('SubSection').exec();
+    ).populate('subSection').exec();
 //Section ke andar Subsection ka data is currently stored in the form of ID but i have to use populated. so that i cant see the ID
 
     //return response
@@ -50,3 +50,35 @@ exports.createSubSection = async (req, res) => {
     })
   }
 };
+//update SubSection:
+
+exports.updateSubSection =async(req,res)=>{
+  
+    try{
+  //data fetch:
+  const{ subSectionId, title,description,timeDuration } = req.body;
+  //data validation
+  if(!subSectionId || !title || !description || !timeDuration){
+      return res.status(400).json({
+          success: false,
+          message: "All fields are required",
+      })
+  }
+  const subSection = await SubSection.findByIdAndUpdate(subSectionId,{title,description,timeDuration},{new:true});
+  return res.status(200).json({
+      success: true,
+      message: "Subsection updated successfully",
+      updatedSubsection: subSection,
+  })
+ 
+}
+catch(error){
+    return res.status(500).json({
+        success: false,
+        message: "Error while updating subsection",
+        error:error.message,
+    })
+}
+   
+
+}
