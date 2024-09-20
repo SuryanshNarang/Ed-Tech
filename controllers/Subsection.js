@@ -82,3 +82,29 @@ catch(error){
    
 
 }
+
+exports.deleteSubSection= async(req,res)=>{
+    try{
+        //data fetch
+        const{subSectionId}=req.params;
+        //data validation
+        if(!subSectionId){
+            return res.status(400).json({
+                success: false,
+                message: "Missing properties.(subSectionID)",
+            })
+        }
+        await SubSection.findByIdAndDelete(subSectionId);
+        return res.status(200).json({
+            success: true,
+            message: "Subsection deleted successfully",
+        })
+
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: "Error while deleting subsection",
+            error:error.message,
+        })
+    }
+}
