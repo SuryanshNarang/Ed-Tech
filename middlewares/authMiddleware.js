@@ -21,7 +21,7 @@ exports.auth = async (req, res) => {
     try {
       const decode = jwt.verify(token, process.env.JWT_SECFRET);
       console.log(decode); //user role will also be displayed becuase of auth controller
-      req.user = decode; //and user role stored in request
+      req.user = decode; //and user role stored in request(check the Profile controller for more logic behind this.)
     } catch (error) {
       //verification isssue
       res.staus(401).json({

@@ -108,13 +108,14 @@ return res.status(200).json({
     message: "Password updated successfully",
  });
 }
-}catch(error){
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Reset password error",
-        })
- }
+catch(error){
+  console.log(error);
+  return res.status(500).json({
+      success: false,
+      message: "Reset password error",
+  })
+}
+}
 
 
  //thats why name resetPasswordToken was kept so that we can generate a token , store it in the User DB, and using that token we can upate user's password

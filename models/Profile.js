@@ -5,13 +5,13 @@ const profileSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
-  dob: {
+  dateOfBirth: {
     type: Date,
   },
   about: {
     type: String,
   },
-  contactNo: {
+  contactNumber: {
     type: Number,
     unique: true,
   },

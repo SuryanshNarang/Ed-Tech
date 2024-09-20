@@ -131,11 +131,11 @@ exports.signup = async (req, res) => {
     //creating an entry of the new user in DB
     //we created the reference of additonal details with Profile model and we need a objectID so to get the objectID we have to store it in the DB
 
-    const profileDetails = await Profile.create({
+    const profileDetails = await Profile.create({ //as we had an additonalDetails in the model
       gender: null,
       dob: null,
       about: null,
-      contactNo: null,
+      contactNo: null,  
     }); //whatever id we will recieve from here we will store that below:
     const user = await User.create({
       //storing details with hashedPassword

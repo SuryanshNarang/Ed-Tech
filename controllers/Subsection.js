@@ -51,7 +51,6 @@ exports.createSubSection = async (req, res) => {
   }
 };
 //update SubSection:
-
 exports.updateSubSection =async(req,res)=>{
   
     try{
@@ -104,7 +103,7 @@ exports.deleteSubSection= async(req,res)=>{
         return res.status(500).json({
             success: false,
             message: "Error while deleting subsection",
-            error:error.message,
+            error:error.message, 
         })
     }
 }
