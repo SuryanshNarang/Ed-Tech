@@ -19,10 +19,9 @@ exports.updateProfile = async (req, res) => {
       });
     }
     //find profile: how to? do we have any profileID? NO
-    //we can have userDetail
-    const userDetails = await User.findByIdAndUpdate(id); //we got all the userDetails
-    //now we can have the profileID in the name of additionDetails
-    const profileID = userDetails.additionalDetails;
+    //we can have userDetail from userID
+    const userDetails = await User.findByIdAndUpdate(id); // //you are querying the User model using userID. This retrieves all user-related details, including information like additionalDetails, which might reference a profile.
+    const profileID = userDetails.additionalDetails; //since additionalDetails has the OBJECTID in our USER SCHEMA we will get profileID
     //now we can have profile data
     const profileDetails = await Profile.findById(profileID);
     //update Profile
@@ -49,22 +48,23 @@ exports.updateProfile = async (req, res) => {
   }
 };
 //TODO:HOMEWORK: to findout scheduling of deleting the user accouunt ki request around 5days tak jaye for deleteing the account.
-//deleteaccount
+//deleteaccount explore CRONE JOB
 
 exports.deleteAccount = async (req, res) => {
   try {
     //getID
-    const id = req.user.id;
+    const id = req.user.id; //userID fetched
     //validation
-    const userDetails = await User.findById(id);
-    if (!userDetails) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    //deleteProfile: first profile(means additional details)
+    const userDetails = await User.findById(id); //you are querying the User model using userID. This retrieves all user-related details, including information like additionalDetails, which might reference a profile.
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+
+    //deleteProfile: first profile(means additional details), then USER ENTRY
+
     await Profile.findByIdAndDelete({ _id: userDetails.additionalDetails });
+
     //deleteUser
     await User.findByIdAndDelete({ _id: id });
     //return response
@@ -77,3 +77,22 @@ exports.deleteAccount = async (req, res) => {
 };
 //TODO:HOMEWORK: suppose there are 100 students enrolled and we have to show that after deleting one account now there are 99 enrolled
 //so enrolledCount m se bhi we have to delete to show this.
+
+//supppose we want all the details of the USER
+exports.getAllUserDetails = async (req, res) => {
+  try {
+    //getID
+    const id = req.user.id;
+    //validation:
+    const userDetais = await User.findbyId(id)
+      .populate("additonalDetails")
+      .exec(); //because it will show only profileID that's why we took the
+    //DB CALL
+    //return response
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while getting user details",
+    });
+  }
+};
