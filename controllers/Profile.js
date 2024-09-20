@@ -48,4 +48,32 @@ exports.updateProfile = async (req, res) => {
     });
   }
 };
-//HOMEWORK: to findout scheduling of deleting the user accouunt ki request around 5days tak jaye for deleteing the account.
+//TODO:HOMEWORK: to findout scheduling of deleting the user accouunt ki request around 5days tak jaye for deleteing the account.
+//deleteaccount
+
+exports.deleteAccount = async (req, res) => {
+  try {
+    //getID
+    const id = req.user.id;
+    //validation
+    const userDetails = await User.findById(id);
+    if (!userDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    //deleteProfile: first profile(means additional details)
+    await Profile.findByIdAndDelete({ _id: userDetails.additionalDetails });
+    //deleteUser
+    await User.findByIdAndDelete({ _id: id });
+    //return response
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while deleting account",
+    });
+  }
+};
+//TODO:HOMEWORK: suppose there are 100 students enrolled and we have to show that after deleting one account now there are 99 enrolled
+//so enrolledCount m se bhi we have to delete to show this.
