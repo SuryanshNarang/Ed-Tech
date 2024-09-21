@@ -97,3 +97,13 @@ exports.capturePayment = async (req, res) => {
   }
 };
 //TILL NOW ONLY CREATION IS DONE WE STILL HAVE TO CAPTURE THE PAYMENT and authorise it>
+
+exports.verifySignature= async(req,res)=>{
+    //we have to do matching: Server ke andar jo Secret pda hai uski matching OR razorpay no jo secret bheja hai
+    const webhookSecret= "12346578";
+    //for example server has this above webHook the secondone will come from Razorpay:
+    //2nd secret will be coming in input 
+    const signature= req.headers["x-razorpay-signature"];
+    //THERE ARE RULES NO WHYYYYYYYYYYYYYYYYYYYY no reasoning
+
+}
