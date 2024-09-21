@@ -84,5 +84,16 @@ exports.capturePayment = async (req, res) => {
         })
         
     }
-  } catch (error) {}
+
+
+    
+
+
+  } catch (error) {
+    return res.status(500).json({
+        success: false,
+        message: "Error in capturing payment",
+    })
+  }
 };
+//TILL NOW ONLY CREATION IS DONE WE STILL HAVE TO CAPTURE THE PAYMENT and authorise it>
