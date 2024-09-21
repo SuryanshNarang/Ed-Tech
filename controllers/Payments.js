@@ -30,14 +30,59 @@ exports.capturePayment = async (req, res) => {
           message: "Course not found",
         });
       }
+      //user already paid for the course
+      //currently we have userID in the form of String but in the course it is stored in the form of OBJECTID
+      //converting UserID to objectID
+      const uid = new mongoose.Types.ObjectId(userId);
+      if (courseData.studentsEnrolled.includes(uid)) {
+        //then student is already enrolled
+        return res.status(400).json({
+          success: false,
+          message: "User already enrolled for this course",
+        });
+      }
     } catch (error) {
       return res.status(500).json({
         success: false,
-        message: "Error fetching course details",
+        message: "error.message",
       });
     }
 
-    //user already paid for the course
     //create order and return response
+    //we need to know amount to create order: course model has the price.
+    const amount = courseData.price;
+    const currency = "INR";
+    const options = {
+      amount: amount * 100, //amount should be in paisa
+      currency: currency,
+      receipt: Math.random(Date.now()).toString(),
+      notes:{
+        courseId: courseId,
+        userId: userId,
+      }
+      payment_capture: 1, //automatically capture the payment
+    };
+    try{
+        //initiate payment using Razorpay:
+        const paymentResponse= await instance.orders.create(options);
+        console.log(paymentResponse);
+        return res.status(200).json({
+            success: true,
+            message: "Payment initiated successfully",
+            courseName: courseData.courseName,
+            courseDescription:courseData.courseDescription,
+            thumbnail:courseData.thumbnail,
+            orderId: paymentResponse.currency//tracking the order.
+            amount:paymentResponse.amount,
+            paymentId: paymentResponse.id,
+        })
+    }catch(error){
+        console.log(error);
+        res.json({
+            success: false,
+            message: "Failed to initiate payment",
+        })
+        
+    }
   } catch (error) {}
 };
