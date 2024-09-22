@@ -101,9 +101,15 @@ exports.capturePayment = async (req, res) => {
 exports.verifySignature= async(req,res)=>{
     //we have to do matching: Server ke andar jo Secret pda hai uski matching OR razorpay no jo secret bheja hai
     const webhookSecret= "12346578";
-    //for example server has this above webHook the secondone will come from Razorpay:
+    //for example server has this above webHook the second one will come from Razorpay:
     //2nd secret will be coming in input 
     const signature= req.headers["x-razorpay-signature"];
     //THERE ARE RULES NO WHYYYYYYYYYYYYYYYYYYYY no reasoning
+    //we need 3 Steps to convert the WEbhookSecret to encrypt it and then match,
+    //hash based message authentication code and one Algorithm: SHA(Secure Hashing Algorithm)
+    //this hmac function need an algo and secret key where algo will be SHA
+    const shasum=crypto.createHmac("sha256",webhookSecret ); //converting from Object to String
+    shasum.update(JSON.stringify(req.body));
+
 
 }
