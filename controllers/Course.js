@@ -110,24 +110,43 @@ exports.getCourseDetails = async (req, res) => {
     //courseId fetch from req.body
     const { courseId } = req.body;
     const courseDetails = await Course.find({ _id: courseId })
-    .populate({
-      path: "instructor",
-      populate: {
-        path: "additionalDetails",
-      },
-    })
-    .populate({
-      path: "category",
-    })
-    .populate({
-      path: "ratingAndReviews",
-    })
-    .populate({
-      path: "courseContent",
-      populate: {
-        path: "subSection",
-      },
-    }).exec();
-    
+      .populate({
+        path: "instructor",
+        populate: {
+          path: "additionalDetails",
+        },
+      })
+      .populate({
+        path: "category",
+      })
+      .populate({
+        path: "ratingAndReviews",
+      })
+      .populate({
+        path: "courseContent",
+        populate: {
+          path: "subSection",
+        },
+      })
+      .exec();
+
+    //validation:
+    if (!courseDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Course details fetched successfully",
+      data: courseDetails,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching course details",
+    });
   }
-}
+};
