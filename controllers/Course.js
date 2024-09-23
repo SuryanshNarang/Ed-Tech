@@ -52,7 +52,7 @@ exports.createCourse = async (req, res) => {
     const newCourse = await Course.create({
       courseName,
       courseDescription,
-       //new course create krte time we fetched instructor details and ID and we need OBJECTID to create the entry in DB
+      //new course create krte time we fetched instructor details and ID and we need OBJECTID to create the entry in DB
       whatYouWillLearn,
       price,
       tag: tagDetails._id,
@@ -103,4 +103,31 @@ exports.showAllCourses = async (req, res) => {
   }
 };
 
+//getCourseDetails:
 
+exports.getCourseDetails = async (req, res) => {
+  try {
+    //courseId fetch from req.body
+    const { courseId } = req.body;
+    const courseDetails = await Course.find({ _id: courseId })
+    .populate({
+      path: "instructor",
+      populate: {
+        path: "additionalDetails",
+      },
+    })
+    .populate({
+      path: "category",
+    })
+    .populate({
+      path: "ratingAndReviews",
+    })
+    .populate({
+      path: "courseContent",
+      populate: {
+        path: "subSection",
+      },
+    }).exec();
+    
+  }
+}
