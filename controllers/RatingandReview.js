@@ -44,10 +44,18 @@ exports.createRating=async(req,res)=>{
 
 
         //returning the response
-
-        const{}
+        return res.status(200).json({
+            success: true,
+            message: "Rating and review added successfully",
+            ratingReview,
+        })
+     
     }catch(error){
-
+        return res.status(500).json({
+            success: false,
+            message: "Error while adding rating and review",
+            error,
+        })
     }
 }
 
