@@ -54,6 +54,13 @@ const courseSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  instructions:{
+    type:[String],
+  },
+  status:{
+    type:String,
+    enum:["Draft","Published"]
+  }
 });
 //mode changed tag type will be string and the category section will have an objectID as there is a category section added to when creating a course.
 module.exports = mongoose.model("Course", courseSchema);
