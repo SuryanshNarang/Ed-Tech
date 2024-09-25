@@ -63,4 +63,17 @@ exports.createRating=async(req,res)=>{
 
 
 //GET average rating: how i knew this? After seeing the UI
+exports.getAverageRating = async(req,res)=>{
+    try{
+        //getCourseID
+        //calculate average rating
+        //
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: "Error while getting average rating",
+            error,
+        })
+    }
+}
 //getAllRatingandReview:
