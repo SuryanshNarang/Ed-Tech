@@ -66,7 +66,15 @@ exports.createRating=async(req,res)=>{
 exports.getAverageRating = async(req,res)=>{
     try{
         //getCourseID
+        const{courseId}= req.body.courseId;
+        
         //calculate average rating
+       const result= await RatingAndReview.aggregate([
+        {
+            //steps: 
+            $match:{ course: new mongoose.Tpyes.objectId(courseId)}
+        }
+       ])
         //
     }catch(error){
         return res.status(500).json({
