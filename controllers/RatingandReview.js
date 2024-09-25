@@ -72,7 +72,14 @@ exports.getAverageRating = async(req,res)=>{
        const result= await RatingAndReview.aggregate([
         {
             //steps: 
-            $match:{ course: new mongoose.Tpyes.objectId(courseId)}
+            $match:{ course: new mongoose.Tpyes.ObjectId(courseId)}//mujhe ek aisa entry findout krkr do  who's courseId is this in Rating and Review: why monoogoose is written because courseId was in string so we converted it in ObjectId
+            
+        },{
+            //when got all the entries now group!
+            $group:{
+                _id: null,
+              
+            }
         }
        ])
         //
