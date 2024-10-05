@@ -66,9 +66,37 @@ exports.categoryPageDetails = async (req, res) => {
       .exec();
 
     //validation
+    if (!selectedCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
     //getcourses for different categories
+    const differentCategories = await Category.find({
+      _id: { $ne: categoryId }, //category collection m is categoryID ke alava saari categories miljygi
+    })
+      .populate("courses")
+      .exec();
     //get TopSelling curses
+    //TODO
+    const topSellingCourses = await Category.find({
+      // You can add filters here if needed
+    })
+      .populate({
+        path: "courses", // Assuming "courses" is a field in Category that holds an array of course references
+        options: { sort: { salesCount: -1 }, limit: 10 }, // Sort courses by sales count in descending order and limit the result to the top 5
+      })
+      .exec();
+
     //return response
+    return res.status(200).json({
+      success: true,
+      message: "Category details retrieved successfully",
+      selectedCategory,
+      differentCategories,
+      topSellingCourses, // This will contain the top 5 most sold courses in the selected category.
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
