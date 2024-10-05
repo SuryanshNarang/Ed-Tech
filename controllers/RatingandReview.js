@@ -105,9 +105,18 @@ exports.getAverageRating = async(req,res)=>{
 }
 //getAllRatingandReview:
 exports.getAllRatingAndReview= async(req,res)=>{
+    //this is bringing all the ratingandReview
+    //TODO we have to bring on the basis of courseID also.
     try{
-
-    }catchI(error){
+        const allReviews= await RatingAndReview.find({})
+            .sort({rating:"desc"}).populate({path:"user",select:"firstname lastname email image"}).populate({path:"course",select:"courseName"}).exec()
+            return res.status(200).json({
+                success:true,
+                message: "All Rating and Reviews fetched successfully",
+                allReviews, //we are bringing all the reviews in descending order.
+            })
+        
+    }catch(error){
         return res.status(500).json({
             success: false,
             message: "Error while getting all rating and reviews",
