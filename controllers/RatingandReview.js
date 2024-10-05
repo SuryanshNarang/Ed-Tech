@@ -59,9 +59,6 @@ exports.createRating=async(req,res)=>{
     }
 }
 
-
-
-
 //GET average rating: how i knew this? After seeing the UI
 exports.getAverageRating = async(req,res)=>{
     try{
@@ -78,11 +75,26 @@ exports.getAverageRating = async(req,res)=>{
             //when got all the entries now group!
             $group:{
                 _id: null,
-              
+                averageRating:{$avg:"$rating"}
             }
         }
        ])
-        //
+       //check if we got rating or not
+       if(result.length>0){
+        return res.status(200).json({
+            success: true,
+            message: "Average rating found successfully",
+            averageRating: result[0].averageRating, //array return hora hai and we have the response at 0th  index.
+        })
+       }
+
+        //if no reating
+        return res.status(200).json({
+            success: true,
+            message: "No rating given for this course",
+            averageRating: 0, //if no rating then average rating is 0
+        })    
+
     }catch(error){
         return res.status(500).json({
             success: false,
@@ -92,3 +104,14 @@ exports.getAverageRating = async(req,res)=>{
     }
 }
 //getAllRatingandReview:
+exports.getAllRatingAndReview= async(req,res)=>{
+    try{
+
+    }catchI(error){
+        return res.status(500).json({
+            success: false,
+            message: "Error while getting all rating and reviews",
+            error,
+        })
+    }
+}

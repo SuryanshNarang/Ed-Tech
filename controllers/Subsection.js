@@ -49,7 +49,7 @@ exports.createSubSection = async (req, res) => {
     });
     })
   }
-};
+
 //update SubSection:
 exports.updateSubSection =async(req,res)=>{
   
