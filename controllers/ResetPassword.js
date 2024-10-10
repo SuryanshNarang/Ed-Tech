@@ -1,12 +1,7 @@
-//forgot password: a link is generated to create new password
-//link is sent to the EMail
-//opening link will open UI and when we enter the new password will update
-
-//divided in 2 flows: link generate and sending to mail and another flow UI and entering password.
-const bcrypt= require('bcrypt');
-//how we will know that link is correct? we will generate a token sent in req, expiry time also.
+const bcrypt = require('bcrypt');
 const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
+
 //reset password (token)
 exports.resetPasswordToken = async (req, res) => {
   try {
@@ -34,7 +29,6 @@ exports.resetPasswordToken = async (req, res) => {
     );
 
     //link generate, below is the frontend link. (different links for different users)
-
     const url = `http://localhost:3000/update-password/${token}`;
     //send mail containing the URL
     await mailSender(
@@ -55,67 +49,64 @@ exports.resetPasswordToken = async (req, res) => {
   }
 };
 
-
 //reset password function
-exports.resetPassword = async(req,res)=>{
-    try{
-//3 things will be there token, password, confirm password
-//after clicking on the link we are redirected to  the UI where new password is entered
-//now those new password will come in this function and we have to store them
+exports.resetPassword = async (req, res) => {
+  try {
+    //3 things will be there token, password, confirm password
+    //after clicking on the link we are redirected to the UI where new password is entered
+    //now those new password will come in this function and we have to store them
 
-//we can also take token form URL which we made above. but the request body will always have it frontend automatically will put it in request body:
+    //we can also take token form URL which we made above. but the request body will always have it frontend automatically will put it in request body:
 
-//STEPS:
-//data fetch
-const {password,confirmPassword,token} =req.body;
-//validation
-if(password!==confirmPassword){
-    return res.status(400).json({
+    //STEPS:
+    //data fetch
+    const { password, confirmPassword, token } = req.body;
+    //validation
+    if (password !== confirmPassword) {
+      return res.status(400).json({
         success: false,
         message: "Passwords do not match",
-    });
-}
-//where will these new passwords will be inserted?? User ke andar password entry will be updated.
-//but how will we get the user entry?? Token will be used to get user ID 
-//so get user details from user DB using token
-const userDetails = await User.findOne({token: token});//why? because we have to store the info of the user 
+      });
+    }
+    //where will these new passwords will be inserted?? User ke andar password entry will be updated.
+    //but how will we get the user entry?? Token will be used to get user ID 
+    //so get user details from user DB using token
+    const userDetails = await User.findOne({ token: token }); //why? because we have to store the info of the user 
 
-//if no entry of the token or time might have expired: invalid
-if(!userDetails){
-    return res.status(404).json({
+    //if no entry of the token or time might have expired: invalid
+    if (!userDetails) {
+      return res.status(404).json({
         success: false,
         message: "Token is invalid",
-    });
-}
-//token time check
-if(userDetails.resetPasswordExpires< Date.now()){
-    return res.json({
+      });
+    }
+    //token time check
+    if (userDetails.resetPasswordExpires < Date.now()) {
+      return res.json({
         success: false,
         message: "Token has expired, Please regenerate your token",
-    })
-}
-//password hash hga again
-const hashedPassword= await bcrypt.hash(password,10);
+      });
+    }
+    //password hash hga again
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-//update password now.
-await User.findOneAndUpdate(
-    {token:token}, //on the basis of the token
-    {password:hashedPassword} //update this value.
-    {new:true}
-)
-return res.status(200).json({
-    success: true,
-    message: "Password updated successfully",
- });
-}
-catch(error){
-  console.log(error);
-  return res.status(500).json({
+    //update password now.
+    await User.findOneAndUpdate(
+      { token: token }, //on the basis of the token
+      { password: hashedPassword }, //update this value.
+      { new: true } // Added missing comma
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
       success: false,
       message: "Reset password error",
-  })
-}
-}
+    });
+  }
+};
 
-
- //thats why name resetPasswordToken was kept so that we can generate a token , store it in the User DB, and using that token we can upate user's password
+//thats why name resetPasswordToken was kept so that we can generate a token , store it in the User DB, and using that token we can upate user's password

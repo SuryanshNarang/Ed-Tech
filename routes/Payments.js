@@ -1,16 +1,10 @@
-// routes/paymentRoutes.js
-
 const express = require("express");
 const router = express.Router();
-const { capturePayment, verifySignature } = require("../controllers/paymentController");
-const authMiddleware = require("../middleware/authMiddleware");
+const paymentsController = require("../controllers/Payments"); // Adjust path as necessary
 
-// Route to capture payment
-// Protected route, requires user authentication
-router.post("/capture-payment", authMiddleware, capturePayment);
-
-// Route to verify payment signature
-// This route should match Razorpay webhook settings for signature verification
-router.post("/verify-signature", verifySignature);
+// Ensure you're correctly pointing to your controller functions
+router.post("/capture-payment", paymentsController.capturePayment);
+router.post("/verify-signature", paymentsController.verifySignature);
 
 module.exports = router;
+

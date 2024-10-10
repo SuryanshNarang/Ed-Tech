@@ -8,11 +8,11 @@ const otpSchema = new mongoose.Schema({
   otp:{
     type:String,
     required:true,
-  }
-  createdAt:{
-    type:Date,
-    default:Date.now(),
-    expires:5*60
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 5 * 60, // OTP will expire after 5 minutes
   }
 });
 //schema ke baad and model ke phle we have to create this

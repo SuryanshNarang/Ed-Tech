@@ -2,7 +2,8 @@ const Course = require("../models/Course");
 const { instance } = require("../config/razorpay");
 const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
-const courseEnrollment = require("../mail/templates/courseEnrollment");
+const courseEnrollment = require("../mail/templates/courseEnrollmentEmail");
+const mongoose = require('mongoose');
 
 //capture the payment and initiate the raozrpay
 exports.capturePayment = async (req, res) => {

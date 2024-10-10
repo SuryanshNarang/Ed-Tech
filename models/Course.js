@@ -22,7 +22,7 @@ const courseSchema = new mongoose.Schema({
   },
   courseContent: [
     {
-      type: mongoose.Schema.Types.ObjectId, //section ki objectID store hgi
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Section",
     },
   ],
@@ -39,14 +39,13 @@ const courseSchema = new mongoose.Schema({
     type: String,
   },
   tag: {
-    type:[String],
+    type: [String],
     required: true,
   },
-  category:{
-    type:mongoose.Schema.Types.ObjectId, //
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
-    
-  }
+  }, // Missing comma added here
   studentsEnrolled: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -54,13 +53,14 @@ const courseSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  instructions:{
-    type:[String],
+  instructions: {
+    type: [String],
   },
-  status:{
-    type:String,
-    enum:["Draft","Published"]
-  }
+  status: {
+    type: String,
+    enum: ["Draft", "Published"],
+  },
 });
-//mode changed tag type will be string and the category section will have an objectID as there is a category section added to when creating a course.
+
+// mode changed tag type will be string and the category section will have an objectID as there is a category section added to when creating a course.
 module.exports = mongoose.model("Course", courseSchema);
