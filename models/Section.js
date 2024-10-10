@@ -1,16 +1,18 @@
+// models/Section.js
 const mongoose = require("mongoose");
 
-// Connect to MongoDB
 const sectionSchema = new mongoose.Schema({
   sectionName: {
     type: String,
+    required: true, // Add required validation
   },
   subSection: [
     {
-      type: mongoose.Schema.Types.ObjectId, //subsection idhar add krna hai
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "SubSection",
     },
   ],
 });
-module.exports= mongoose.model("Section", sectionSchema);
+
+module.exports = mongoose.model("Section", sectionSchema);
