@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const mailSender=require('../utils/mailSender');
 const otpSchema = new mongoose.Schema({
-  emaiL: {
+  email: {
     type: String,
     required: true,
   },

@@ -17,7 +17,7 @@ router.post("/login", login);
 router.post("/signup", signup);
 
 // Route to send OTP (for password reset, email verification, etc.)
-router.post("/sendotp", sendOTP);  // Make sure to use `sendOTP` here
+router.post("/sendOTP", sendOTP);  // Make sure to use `sendOTP` here
 
 // Route to change user password
 // Protected route, requires user authentication
