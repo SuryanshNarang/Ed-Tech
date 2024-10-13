@@ -4,39 +4,43 @@ require("dotenv").config();
 const User = require("../models/User");
 //will check authentication in this.
 //on the basis of jwt authentication is done
-exports.auth = async (req, res) => {
+// Middlewares/authMiddleware.js
+exports.auth = async (req, res, next) => {
   try {
-    //extract kro token sbse phle
     const token =
       req.cookies.token ||
       req.body.token ||
-      req.header("Authorisation").replace("Bearer", "");
+      req.header("Authorization").replace("Bearer ", "");
+    
+    console.log("Extracted Token:", token); // Log the token to debug
+
     if (!token) {
       return res.status(401).json({
         success: false,
         message: "No token, authorization denied",
       });
     }
-    //verify token now on what basis??? secret key
+
     try {
       const decode = jwt.verify(token, process.env.JWT_SECRET);
-      console.log(decode); //user role will also be displayed becuase of auth controller
-      req.user = decode; //and user role stored in request(check the Profile controller for more logic behind this.)
+      req.user = decode;
+      next();
     } catch (error) {
-      //verification isssue
-      res.staus(401).json({
+      console.error("Token Verification Error:", error); // Log the error details
+      return res.status(401).json({
         success: false,
         message: "Token is invalid",
       });
     }
-    next();
   } catch (error) {
+    console.error("General Auth Error:", error); // Log general errors
     return res.status(401).json({
       success: false,
-      message: "Something wen wrong while validating token",
+      message: "Something went wrong while validating token",
     });
   }
 };
+
 //isStudent auth done on basis of role.
 exports.isStudent = async (req, res, next) => {
   //at the time of login controller we created a payload which contained user role
@@ -50,6 +54,7 @@ exports.isStudent = async (req, res, next) => {
         message: "User is not a student",
       });
     }
+    next();
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -70,6 +75,7 @@ exports.isInstructor = async (req, res, next) => {
         message: "User is not a student",
       });
     }
+    next();
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -90,6 +96,7 @@ exports.isAdmin = async (req, res) => {
         message: "User is not a student",
       });
     }
+    next();
   } catch (error) {
     return res.status(401).json({
       success: false,
