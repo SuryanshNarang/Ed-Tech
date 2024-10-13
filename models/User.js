@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema({
   firstname: {
     type: String,
-    required: true,
+    required: true, // Corrected this line by removing extra braces
   },
   lastname: {
     type: String,
@@ -15,7 +16,7 @@ const userSchema = new mongoose.Schema({
     match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
     trim: true,
   },
-  pwd: {
+  password: {
     type: String,
     required: true,
     minlength: 8,
@@ -29,10 +30,9 @@ const userSchema = new mongoose.Schema({
   additionalDetails: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "Profile",
+    ref: "Profile", // Ensure this refers to the correct Profile model
   },
   courses: [
-    //in array because there will be multiple courses
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
@@ -45,11 +45,11 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
   courseProgress: [
-    //in array because there will be multiple coursesprogresses.
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CourseProgress",
     },
   ],
 });
+
 module.exports = mongoose.model("User", userSchema);

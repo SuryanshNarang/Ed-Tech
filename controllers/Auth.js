@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const OTP = require("../models/OTP");
 const otpGenerator = require("otp-generator");
+const Profile = require("../models/Profile");
+
 require("dotenv").config();
 //sendOtp
 exports.sendOTP = async (req, res) => {
@@ -29,7 +31,7 @@ exports.sendOTP = async (req, res) => {
     //check unique otp or not
     let result = await OTP.findOne({ otp: otp });
     while (result) {
-      otp = otpGenerator(6, {
+      otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
@@ -58,6 +60,8 @@ exports.sendOTP = async (req, res) => {
 };
 
 //signup
+
+//signup
 require("dotenv").config();
 exports.signup = async (req, res) => {
   try {
@@ -69,8 +73,8 @@ exports.signup = async (req, res) => {
       password,
       confirmPassword,
       accountType,
-      contactNumber,
       otp,
+      contactNumber // Ensure this field is included
     } = req.body;
 
     //validate krlo
@@ -80,15 +84,16 @@ exports.signup = async (req, res) => {
       !email ||
       !password ||
       !confirmPassword ||
-      !otp
+      !otp ||
+      !contactNumber // Add validation for contactNumber
     ) {
       return res.status(403).json({
         success: false,
         message: "All fields are required",
-      }); //account type is a tab in which one will always be selected so we didnt took it.
+      });
     }
     //match the passwords:
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "Passwords do not match",
@@ -96,7 +101,7 @@ exports.signup = async (req, res) => {
     }
 
     //check if user already exists:
-    const existingUser = await user.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -108,13 +113,19 @@ exports.signup = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(1);
     console.log(recentOtp);
+
     //validateOTP
-    if (recentOtp.length == 0) {
+    if (recentOtp.length === 0) {
       return res.status(400).json({
         success: false,
         message: "No OTP found for this user",
       });
-    } else if (otp !== recentOtp.otp) {
+    }
+
+    const { otp: storedOtp } = recentOtp[0]; // Get the stored OTP from the recentOtp
+
+    // Check if the provided OTP matches the stored OTP
+    if (otp !== storedOtp) {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
 
@@ -128,17 +139,16 @@ exports.signup = async (req, res) => {
         message: "Failed to hash password",
       });
     }
+    
     //creating an entry of the new user in DB
-    //we created the reference of additonal details with Profile model and we need a objectID so to get the objectID we have to store it in the DB
-
     const profileDetails = await Profile.create({
-      //as we had an additonalDetails in the model
       gender: null,
       dob: null,
       about: null,
-      contactNo: null,
-    }); //whatever id we will recieve from here we will store that below:
-    const user = await User.create({
+      contactNumber: contactNumber, // Store the contact number
+    }); //whatever id we will receive from here we will store that below:
+    
+    const newUser = await User.create({
       //storing details with hashedPassword
       firstname,
       lastname,
@@ -149,9 +159,11 @@ exports.signup = async (req, res) => {
       additionalDetails: profileDetails._id,
       image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstname}${lastname}`,
     });
+    
     return res.status(200).json({
       success: true,
       message: "User registered successfully",
+      user: newUser,
     });
   } catch (error) {
     res.status(400).json({
@@ -160,6 +172,7 @@ exports.signup = async (req, res) => {
     });
   }
 };
+
 //login
 exports.login = async (req, res) => {
   try {

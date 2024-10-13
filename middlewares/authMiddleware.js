@@ -19,7 +19,7 @@ exports.auth = async (req, res) => {
     }
     //verify token now on what basis??? secret key
     try {
-      const decode = jwt.verify(token, process.env.JWT_SECFRET);
+      const decode = jwt.verify(token, process.env.JWT_SECRET);
       console.log(decode); //user role will also be displayed becuase of auth controller
       req.user = decode; //and user role stored in request(check the Profile controller for more logic behind this.)
     } catch (error) {
@@ -56,6 +56,7 @@ exports.isStudent = async (req, res, next) => {
       message: "Something wen wrong while validating user role",
     });
   }
+  next();
 };
 //isInstructor
 exports.isInstructor = async (req, res, next) => {

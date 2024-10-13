@@ -11,9 +11,11 @@ const profileSchema = new mongoose.Schema({
   about: {
     type: String,
   },
-  contactNumber: {
-    type: Number,
-    unique: true,
-  },
+contactNumber: {
+  type: Number,
+  unique: true,
+  sparse: true, // This allows multiple documents with `contactNumber` set to `null`
+}
+
 });
 module.exports = mongoose.model("Profile", profileSchema);
