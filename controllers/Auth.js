@@ -157,7 +157,7 @@ exports.signup = async (req, res) => {
       password: hashedPassword,
       accountType,
       additionalDetails: profileDetails._id,
-      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstname}${lastname}`,
+      // image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstname}${lastname}`,
     });
     
     return res.status(200).json({
@@ -194,10 +194,12 @@ exports.login = async (req, res) => {
         message: "User not found",
       });
     }
-
-    if (await bcrypt.compare(password, user.password)) {
+    console.log(user);
+    console.log("hashed password:",user.password)
+   
       //if password is matched which is there in DB and which user has given
       //if password is correct then generate JWT token.
+      const passwordMatch = await bcrypt.compare(password, user.password);
       const payload = {
         email: user.email,
         id: user._id,
@@ -221,12 +223,8 @@ exports.login = async (req, res) => {
         message: "Login successful",
         user,
       });
-    } else {
-      return res.status(401).json({
-        success: false,
-        message: "Incorrect password",
-      });
-    }
+    
+    
   } catch (error) {
     console.log(error);
 
