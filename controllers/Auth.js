@@ -173,67 +173,74 @@ exports.signup = async (req, res) => {
   }
 };
 
-//login
+
+// Login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    //if user hasn't put any data for the email or password on the login screen
+
+    // Check if both email and password are provided
     if (!email || !password) {
       return res.status(400).json({
         success: false,
         message: "Please provide both email and password",
       });
     }
-    //check if user exists or not
-    //use findOne method to check the email in the DB
+
+    // Find user by email
     const user = await User.findOne({ email }).populate("additionalDetails");
     if (!user) {
-      //login ho rha h bro
       return res.status(401).json({
         success: false,
         message: "User not found",
       });
     }
-    console.log(user);
-    console.log("hashed password:",user.password)
-   
-      //if password is matched which is there in DB and which user has given
-      //if password is correct then generate JWT token.
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      const payload = {
-        email: user.email,
-        id: user._id,
-        role: user.accountType,
-      };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "2h",
-      });
-      //inserted token inside user
-      user.token = token;
-      user.password = undefined;
-      //create cookie and send response
-      const options = {
-        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-        httpOnly: true,
-        secure: true, //if we are running server on https then true otherwise false.
-      };
-      res.cookie("token", token, options).status(200).json({
-        success: true,
-        token,
-        message: "Login successful",
-        user,
-      });
-    
-    
-  } catch (error) {
-    console.log(error);
 
+    // Check if the provided password matches the stored hashed password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    // Generate JWT token if password matches
+    const payload = {
+      email: user.email,
+      id: user._id,
+      role: user.accountType,
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
+    // Clear password before sending response
+    user.password = undefined;
+
+    // Create cookie and send response
+    const options = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: true, // Set to true if using HTTPS
+    };
+
+    return res.cookie("token", token, options).status(200).json({
+      success: true,
+      token,
+      message: "Login successful",
+      user,
+    });
+
+  } catch (error) {
+    console.error("Login error:", error);
     return res.status(500).json({
       success: false,
       message: "Login error",
     });
   }
 };
+
 //Change password.
 exports.changePassword = async (req, res) => {
   //get data from req body

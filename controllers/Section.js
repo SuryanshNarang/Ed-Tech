@@ -1,4 +1,4 @@
-export Section=require("../models/Section");
+
 const Course= require("../models/Course");
 const Section = require("../models/Section");
 //Course create krchuke hai isse pehle so we have the courseID when addAsection is clicked then courseID we can send in it.

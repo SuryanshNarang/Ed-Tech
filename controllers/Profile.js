@@ -79,20 +79,31 @@ exports.deleteAccount = async (req, res) => {
 //so enrolledCount m se bhi we have to delete to show this.
 
 //supppose we want all the details of the USER
+ // Assuming you have a User model defined
+
 exports.getAllUserDetails = async (req, res) => {
   try {
-    //getID
-    const id = req.user.id;
-    //validation:
-    const userDetais = await User.findbyId(id)
-      .populate("additonalDetails")
-      .exec(); //because it will show only profileID that's why we took the
-    //DB CALL
-    //return response
+    const id = req.user.id; // Assuming req.user.id contains the user's ID
+    const userDetails = await User.findById(id)
+      .populate("additionalDetails") // Assuming "additionalDetails" is a field to be populated
+      .exec();
+
+    if (!userDetails) { // Check if user details were found
+      return res.status(404).json({
+        success: false,
+        message: "User details not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: userDetails,
+    });
   } catch (error) {
+    console.error("Error while getting user details:", error);
     return res.status(500).json({
       success: false,
       message: "Error while getting user details",
-    }); 
+    });
   }
 };

@@ -7,6 +7,11 @@ const {
   getCourseDetails,
 } = require("../controllers/Course");
 
+const{
+  createCategory,
+  showAllCategory,
+  categoryPageDetails
+}=require("../controllers/Category")
 // Route to create a new course
 router.post("/create-course", auth, createCourse);
 
@@ -15,5 +20,19 @@ router.get("/all-courses", auth, showAllCourses);
 
 // Route to get details of a specific course
 router.post("/course-details", auth, getCourseDetails);
+
+
+
+
+
+
+
+//CATEGORY ROUTES
+router.post("/create-category", auth, createCategory);
+router.get("/category-details", auth, showAllCategory);
+router.get("/getCategoryPageDetails", auth,categoryPageDetails)
+
+
+
 
 module.exports = router;

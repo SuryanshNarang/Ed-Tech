@@ -3,6 +3,7 @@ const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
 
 //reset password (token)
+//ek token create krke user ko mail send krta tha us mail ke andar link hota tha then on that link frontend opens then password is changed.
 exports.resetPasswordToken = async (req, res) => {
   try {
     //get email from request body
