@@ -13,7 +13,13 @@ exports.createCourse = async (req, res) => {
       req.body;
     //get thumbnail
     const thumbnail = req.files.thumbnailImage;
-
+    if (!req.files || !req.files.thumbnailImage) {
+      return res.status(400).json({
+        success: false,
+        message: "Thumbnail image is required"
+      });
+    }
+    
     //validation
     if (!courseName || !courseDescription || !price || !tag || !thumbnail) {
       res.status(400).json({

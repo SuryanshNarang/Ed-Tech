@@ -13,7 +13,7 @@ const{
   categoryPageDetails
 }=require("../controllers/Category")
 // Route to create a new course
-router.post("/create-course", auth, createCourse);
+router.post("/create-course", createCourse);
 
 // Route to get all courses
 router.get("/all-courses", auth, showAllCourses);
