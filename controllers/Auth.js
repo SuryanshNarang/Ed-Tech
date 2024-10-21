@@ -1,17 +1,21 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const User = require("../models/User");
-const OTP = require("../models/OTP");
-const otpGenerator = require("otp-generator");
-const Profile = require("../models/Profile");
-
-require("dotenv").config();
+const bcrypt = require("bcryptjs")
+const User = require("../models/User")
+const OTP = require("../models/OTP")
+const jwt = require("jsonwebtoken")
+const otpGenerator = require("otp-generator")
+const mailSender = require("../utils/mailSender")
+const { passwordUpdated } = require("../mail/templates/passwordUpdate")
+const Profile = require("../models/Profile")
+require("dotenv").config()
 //sendOtp
+
+
 exports.sendOTP = async (req, res) => {
   try {
-    //fetch email from req ki body
+    // Fetch email from request body
     const { email } = req.body;
-    //check if user already exists
+
+    // Check if user already exists
     const checkUserPresent = await User.findOne({ email });
     if (checkUserPresent) {
       return res.status(400).json({
@@ -20,15 +24,15 @@ exports.sendOTP = async (req, res) => {
       });
     }
 
-    //generate OTP
-    var otp = otpGenerator.generate(6, {
+    // Generate OTP
+    let otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
     });
-    console.log("otp generated successfully", otp);
+    console.log("OTP generated successfully:", otp);
 
-    //check unique otp or not
+    // Check for unique OTP
     let result = await OTP.findOne({ otp: otp });
     while (result) {
       otp = otpGenerator.generate(6, {
@@ -38,17 +42,18 @@ exports.sendOTP = async (req, res) => {
       });
       result = await OTP.findOne({ otp: otp });
     }
-    //in companies we interact with services which offer unique otp only its a brute force approach which we used.
-    //to enter the otp in the database
+
+    // Prepare OTP payload
     const otpPayload = { email, otp };
-    //inserting otp into the database
+    
+    // Insert OTP into the database
     const otpBody = await OTP.create(otpPayload);
     console.log(otpBody);
 
-    //return response
+    // Return response
     res.status(200).json({
       success: true,
-      message: "OTP sent   successfully",
+      message: "OTP sent successfully",
     });
   } catch (error) {
     console.log(error);
@@ -58,8 +63,6 @@ exports.sendOTP = async (req, res) => {
     });
   }
 };
-
-//signup
 
 //signup
 require("dotenv").config();
@@ -172,8 +175,6 @@ exports.signup = async (req, res) => {
     });
   }
 };
-
-
 // Login
 exports.login = async (req, res) => {
   try {
@@ -243,26 +244,65 @@ exports.login = async (req, res) => {
 
 //Change password.
 exports.changePassword = async (req, res) => {
-  //get data from req body
-  //we are changing password
+  try {
+    // Get user data from req.user
+    const userDetails = await User.findById(req.user.id)
 
-  //3 types of data would be there old,new and confirm new password
-  const { oldpassword, newpassword, confirmnewpassword } = req.body;
-  //validation they are not empty, matching should be there
-  if (!oldpassword || !newpassword || confirmnewpassword) {
-    return res.status(400).json({
+    // Get old password, new password, and confirm new password from req.body
+    const { oldPassword, newPassword } = req.body
+
+    // Validate old password
+    const isPasswordMatch = await bcrypt.compare(
+      oldPassword,
+      userDetails.password
+    )
+    if (!isPasswordMatch) {
+      // If old password does not match, return a 401 (Unauthorized) error
+      return res
+        .status(401)
+        .json({ success: false, message: "The password is incorrect" })
+    }
+
+    // Update password
+    const encryptedPassword = await bcrypt.hash(newPassword, 10)
+    const updatedUserDetails = await User.findByIdAndUpdate(
+      req.user.id,
+      { password: encryptedPassword },
+      { new: true }
+    )
+
+    // Send notification email
+    try {
+      const emailResponse = await mailSender(
+        updatedUserDetails.email,
+        "Password for your account has been updated",
+        passwordUpdated(
+          updatedUserDetails.email,
+          `Password updated successfully for ${updatedUserDetails.firstName} ${updatedUserDetails.lastName}`
+        )
+      )
+      console.log("Email sent successfully:", emailResponse.response)
+    } catch (error) {
+      // If there's an error sending the email, log the error and return a 500 (Internal Server Error) error
+      console.error("Error occurred while sending email:", error)
+      return res.status(500).json({
+        success: false,
+        message: "Error occurred while sending email",
+        error: error.message,
+      })
+    }
+
+    // Return success response
+    return res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" })
+  } catch (error) {
+    // If there's an error updating the password, log the error and return a 500 (Internal Server Error) error
+    console.error("Error occurred while updating password:", error)
+    return res.status(500).json({
       success: false,
-      message: "All fields are required",
-    });
+      message: "Error occurred while updating password",
+      error: error.message,
+    })
   }
-  //check if new password matches confirm new Password
-  if (newpassword !== confirmnewpassword) {
-    return res.status(400).json({
-      success: false,
-      message: "New password and confirm new password must match",
-    });
-  }
-  //update in database.
-  //mail send krdo password is updated.
-  //return response.
-};
+}

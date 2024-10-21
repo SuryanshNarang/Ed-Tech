@@ -1,107 +1,98 @@
-//MIDDLEWARE hai so will act in between to check if the request came is valid or not
+// Importing required modules
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const dotenv = require("dotenv");
 const User = require("../models/User");
-//will check authentication in this.
-//on the basis of jwt authentication is done
-// Middlewares/authMiddleware.js
+// Configuring dotenv to load environment variables from .env file
+dotenv.config();
+
+// This function is used as middleware to authenticate user requests
 exports.auth = async (req, res, next) => {
-  try {
-    const token =
-      req.cookies.token ||
-      req.body.token ||
-      req.header("Authorization").replace("Bearer ", "");
-    
-    console.log("Extracted Token:", token); // Log the token to debug
+	try {
+		// Extracting JWT from request cookies, body or header
+		const token =
+			req.cookies.token ||
+			req.body.token ||
+			req.header("Authorization").replace("Bearer ", "");
 
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "No token, authorization denied",
-      });
-    }
+		// If JWT is missing, return 401 Unauthorized response
+		if (!token) {
+			return res.status(401).json({ success: false, message: `Token Missing` });
+		}
 
-    try {
-      const decode = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decode;
-      next();
-    } catch (error) {
-      console.error("Token Verification Error:", error); // Log the error details
-      return res.status(401).json({
-        success: false,
-        message: "Token is invalid",
-      });
-    }
-  } catch (error) {
-    console.error("General Auth Error:", error); // Log general errors
-    return res.status(401).json({
-      success: false,
-      message: "Something went wrong while validating token",
-    });
-  }
+		try {
+			// Verifying the JWT using the secret key stored in environment variables
+			const decode = await jwt.verify(token, process.env.JWT_SECRET);
+			console.log(decode);
+			// Storing the decoded JWT payload in the request object for further use
+			req.user = decode;
+		} catch (error) {
+			// If JWT verification fails, return 401 Unauthorized response
+			return res
+				.status(401)
+				.json({ success: false, message: "token is invalid" });
+		}
+
+		// If JWT is valid, move on to the next middleware or request handler
+		next();
+	} catch (error) {
+		// If there is an error during the authentication process, return 401 Unauthorized response
+		return res.status(401).json({
+			success: false,
+			message: `Something Went Wrong While Validating the Token`,
+		});
+	}
 };
-
-//isStudent auth done on basis of role.
 exports.isStudent = async (req, res, next) => {
-  //at the time of login controller we created a payload which contained user role
-  try {
-    //1) req m se we can find out first method
-    //2) second can be taking from DB accountType
-    //but we will go with first method as we already have the data
-    if (req.user.accountType !== "Student") {
-      return res.status(401).json({
-        success: false,
-        message: "User is not a student",
-      });
-    }
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Something wen wrong while validating user role",
-    });
-  }
-  next();
+	try {
+		const userDetails = await User.findOne({ email: req.user.email });
+
+		if (userDetails.accountType !== "Student") {
+			return res.status(401).json({
+				success: false,
+				message: "This is a Protected Route for Students",
+			});
+		}
+		next();
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ success: false, message: `User Role Can't be Verified` });
+	}
 };
-//isInstructor
+exports.isAdmin = async (req, res, next) => {
+	try {
+		const userDetails = await User.findOne({ email: req.user.email });
+
+		if (userDetails.accountType !== "Admin") {
+			return res.status(401).json({
+				success: false,
+				message: "This is a Protected Route for Admin",
+			});
+		}
+		next();
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ success: false, message: `User Role Can't be Verified` });
+	}
+};
 exports.isInstructor = async (req, res, next) => {
-  try {
-    //1) req m se we can find out first method
-    //2) second can be taking from DB accountType
-    //but we will go with first method as we already have the data
-    if (req.user.accountType !== "Instructor") {
-      return res.status(401).json({
-        success: false,
-        message: "User is not a student",
-      });
-    }
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Something wen wrong while validating user role",
-    });
-  }
-  next();
-};
-//isAdmin
-exports.isAdmin = async (req, res) => {
-  try {
-    //1) req m se we can find out first method
-    //2) second can be taking from DB accountType
-    //but we will go with first method as we already have the data
-    if (req.user.accountType !== "Admin") {
-      return res.status(401).json({
-        success: false,
-        message: "User is not a student",
-      });
-    }
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Something wen wrong while validating user role",
-    });
-  }
-  next();
+	try {
+		const userDetails = await User.findOne({ email: req.user.email });
+		console.log(userDetails);
+
+		console.log(userDetails.accountType);
+
+		if (userDetails.accountType !== "Instructor") {
+			return res.status(401).json({
+				success: false,
+				message: "This is a Protected Route for Instructor",
+			});
+		}
+		next();
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ success: false, message: `User Role Can't be Verified` });
+	}
 };

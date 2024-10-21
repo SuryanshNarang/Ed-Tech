@@ -3,9 +3,16 @@ const router = express.Router();
 const { auth } = require("../middlewares/authMiddleware");
 const {
   createCourse,
-  showAllCourses,
+  getAllCourses,
   getCourseDetails,
-} = require("../controllers/Course");
+  getInstructorCourses,
+  editCourse,
+  getFullCourseDetails,
+  deleteCourse,
+  searchCourse,
+  markLectureAsComplete,
+} = require("../controllers/Course")
+
 
 const{
   createCategory,
@@ -16,7 +23,7 @@ const{
 router.post("/create-course", createCourse);
 
 // Route to get all courses
-router.get("/all-courses", auth, showAllCourses);
+router.get("/all-courses", auth, getAllCourses);
 
 // Route to get details of a specific course
 router.post("/course-details", auth, getCourseDetails);
