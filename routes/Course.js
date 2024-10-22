@@ -12,13 +12,22 @@ const {
   searchCourse,
   markLectureAsComplete,
 } = require("../controllers/Course")
-
-
+const {
+  createSection,
+  updateSection,
+  deleteSection,
+} = require("../controllers/Section")
+router.post("/addSection", auth, isInstructor, createSection)
+// Update a Section
+router.post("/updateSection", auth, isInstructor, updateSection)
+// Delete a Section
+router.post("/deleteSection", auth, isInstructor, deleteSection)
 const{
   createCategory,
   showAllCategory,
   categoryPageDetails
 }=require("../controllers/Category")
+
 // Route to create a new course
 router.post("/create-course", auth, isInstructor, createCourse);
 

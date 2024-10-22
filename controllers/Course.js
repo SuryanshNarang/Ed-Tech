@@ -154,11 +154,11 @@ exports.getCourseDetails = async (req,res)=>{
 	const courseDetails=await Course.find({_id: courseId}).populate({path:"instructor",
 	populate:{path:"additionalDetails"}})
 	.populate("category")
-	.populate({                    //only populate user name and image
-		path:"ratingAndReviews",
-		populate:{path:"user"
-		,select:"firstName lastName accountType image"}
-	})
+	// .populate({                    //only populate user name and image
+	// 	path:"ratingAndReviews",
+	// 	populate:{path:"user"
+	// 	,select:"firstName lastName accountType image"}
+	// })
 	.populate({path:"courseContent",populate:{path:"subSection"}})
 	.exec();
 
