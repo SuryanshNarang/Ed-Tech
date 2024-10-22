@@ -65,7 +65,8 @@ exports.sendOTP = async (req, res) => {
 };
 
 //signup
-require("dotenv").config();
+
+
 exports.signup = async (req, res) => {
   try {
     //data fetch from request ki body:

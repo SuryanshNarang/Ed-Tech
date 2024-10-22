@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { auth } = require("../middlewares/authMiddleware");
+const { auth, isInstructor } = require("../middlewares/authMiddleware");
 const {
   createCourse,
   getAllCourses,
@@ -20,7 +20,7 @@ const{
   categoryPageDetails
 }=require("../controllers/Category")
 // Route to create a new course
-router.post("/create-course", createCourse);
+router.post("/create-course", auth, isInstructor, createCourse);
 
 // Route to get all courses
 router.get("/all-courses", auth, getAllCourses);

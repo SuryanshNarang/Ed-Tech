@@ -34,12 +34,11 @@ app.use(
 )
 
 app.use(
-    fileUpload({
-       useTempFiles: true,
-       tempFileDir: "/tmp" // Corrected syntax here
-    })
-);
-
+	fileUpload({
+		useTempFiles:true,
+		tempFileDir:"/tmp",
+	})
+)
 
 //cloudinary:
 cloudinaryConnect();
