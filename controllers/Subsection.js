@@ -26,7 +26,13 @@ exports.createSubSection = async (req, res) => {
     );
     console.log(uploadDetails);
     //create a subsection:
-    const SubSectionDetails=await SubSection.create({title:title, timeDuration:`${timeDuration}`,description:description,videoURL:uploadDetails.secure_url }) // Use secure_url from Cloudinary response(videoDetails m jo b secure URL hai that wiill be there as we got it from cloudinary) 
+    const SubSectionDetails = await SubSection.create({
+        title: title,
+        timeDuration: `${uploadDetails.duration}`,
+        description: description,
+        videoUrl: uploadDetails.secure_url,
+      })
+   // Use secure_url from Cloudinary response(videoDetails m jo b secure URL hai that wiill be there as we got it from cloudinary) 
     //now subsection ID will be store in the SectionModel
     const updatedSection = await Section.findByIdAndUpdate(
         sectionId, // Directly pass sectionId
