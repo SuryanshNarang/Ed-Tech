@@ -57,7 +57,7 @@ exports.createRating=async(req,res)=>{
             error,
         })
     }
-}
+};
 
 //GET average rating: how i knew this? After seeing the UI
 exports.getAverageRating = async(req,res)=>{
